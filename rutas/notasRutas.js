@@ -15,7 +15,6 @@ router.get('/usuarios/:nombreUsuario', notasControlador.getNotaPorUsuario);
 // contar versiculos por cada libro
 router.get('/contar', notasControlador.contarNotasPorAutor);
 
-
 module.exports = router;
 
 

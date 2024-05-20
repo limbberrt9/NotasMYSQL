@@ -1,5 +1,7 @@
 const Notas = require('../modelos/notas');
 const Usuario = require('../modelos/usuario');
+const sequelize = require('../config/database');
+const Seq =  require('sequelize');
 
 exports.getTodosLasNotas = async (peticion, respuesta) => {
     try {
@@ -95,7 +97,7 @@ exports.buscarNotas = async (peticion, respuesta) => {
 
 
 
-////////////////////////////////////////////
+// NOTAS POR USUARIO
 exports.getNotaPorUsuario = async (peticion, respuesta) => {
     const { nombreUsuario } = peticion.params;
     try {
@@ -112,14 +114,15 @@ exports.getNotaPorUsuario = async (peticion, respuesta) => {
         console.log(error);
         respuesta.status(500).send(error);
     }
-}
+};
 
+//CONTAR NOTAS POR AUTOR
 exports.contarNotasPorAutor = async (peticion, respuesta) => {
     try {
         const todasNota = await Notas.findAll({
             attributes: [
                 'idUsuario',
-                [Seq.fn('COUNT', Seq.col('idNota')), 'contarNota' ]
+                [Seq.fn('COUNT', Seq.col('idNota')), 'contarNotas' ]
             ],
             group: ['idUsuario'],
             include: [{ model: Usuario, as: 'usuario', attributes: ['nombreUsuario'] }]
@@ -130,4 +133,6 @@ exports.contarNotasPorAutor = async (peticion, respuesta) => {
         console.log(error);
         respuesta.status(500).send(error);
     }
-}
+};
+
+//CON
