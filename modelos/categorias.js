@@ -1,7 +1,6 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Ajusta la ruta según tu configuración de Sequelize
 const Nota = require('./notas');
-const Usuario = require('./usuario');
 
 
 const Categorias = sequelize.define('categorias', {
@@ -29,11 +28,13 @@ const Categorias = sequelize.define('categorias', {
 });
 
 
+
+
 //RELACIONES
-Usuario.hasMany(Nota, { foreignKey: 'idUsuario', as: 'nota' });
-Nota.belongsTo(Usuario, { foreignKey: 'idUsuario', as: 'usuarios' });
-Nota.hasMany(Categorias, { foreignKey: 'idNota', as: 'categorias' });
-Categorias.belongsTo(Nota, { foreignKey: 'idNota', as: 'nota' });
+Categorias.belongsTo(Nota, {foreignKey: 'idNota', as: 'notas'});
+// relacion 1 a muhcos
+Nota.hasMany(Categorias, {foreignKey : 'idNota', as: 'categorias'})
+
 
 module.exports = Categorias;
 

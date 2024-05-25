@@ -2,6 +2,9 @@ const Notas = require('../modelos/notas');
 const Usuario = require('../modelos/usuario');
 const sequelize = require('../config/database');
 const Seq =  require('sequelize');
+const Categoria = require('../modelos/categorias');
+const Recordatorios = require('../modelos/recordatorios');
+const { Op } = require('sequelize');    
 
 exports.getTodosLasNotas = async (peticion, respuesta) => {
     try {
@@ -93,8 +96,24 @@ exports.buscarNotas = async (peticion, respuesta) => {
 };
 
 
-
-
+//CONTAR NOTAS POR AUTOR
+exports.contarNotasPorAutor = async (peticion, respuesta) => {
+    try {
+        const todasNota = await Notas.findAll({
+            attributes: [
+                'idUsuario',
+                [Seq.fn('COUNT', Seq.col('idNota')), 'contarNotas' ]
+            ],
+            group: ['idUsuario'],
+            include: [{ model: Usuario, as: 'usuario', attributes: ['nombreUsuario'] }]
+        });
+        respuesta.json(todasNota);
+    }
+    catch(error){
+        console.log(error);
+        respuesta.status(500).send(error);
+    }
+};
 
 
 // NOTAS POR USUARIO
@@ -116,23 +135,64 @@ exports.getNotaPorUsuario = async (peticion, respuesta) => {
     }
 };
 
-//CONTAR NOTAS POR AUTOR
-exports.contarNotasPorAutor = async (peticion, respuesta) => {
+// NOTAS POR CATEGORIA
+exports.getNotaPorCategoria = async (peticion, respuesta) => {
+    const { nombreCategoria } = peticion.params;
     try {
-        const todasNota = await Notas.findAll({
-            attributes: [
-                'idUsuario',
-                [Seq.fn('COUNT', Seq.col('idNota')), 'contarNotas' ]
-            ],
-            group: ['idUsuario'],
-            include: [{ model: Usuario, as: 'usuario', attributes: ['nombreUsuario'] }]
+        // Encuentra las notas asociadas a la categoría especificada
+        const notas = await Notas.findAll({
+            where: {
+                idNota: {
+                    [Op.in]: sequelize.literal(
+                        `(SELECT idNota FROM Categorias WHERE nombreCategoria = '${nombreCategoria}')`
+                    )
+                }
+            },
+            include: [{ model: Usuario, as: 'usuario' }] // Incluir la relación con Usuarios
         });
-        respuesta.json(todasNota);
-    }
-    catch(error){
+
+        respuesta.json(notas);
+    } catch(error) {
         console.log(error);
         respuesta.status(500).send(error);
     }
 };
 
-//CON
+
+/********************************* */
+
+exports.getRecordatoriosPorCategoriaYUsuario = async (req, res) => {
+    const { nombreUsuario, nombreCategoria } = req.params;
+    try {
+        const recordatorios = await Recordatorios.findAll({
+            include: [
+                {
+                    model: Notas,
+                    where: {
+                        '$categorias.nombreCategoria$': nombreCategoria // Filtra por nombre de categoría
+                    },
+                    include: [
+                        {
+                            model: Usuario,
+                            where: {
+                                nombreUsuario: nombreUsuario // Filtra por nombre de usuario
+                            }
+                        },
+                        {
+                            model: Categoria,
+                            as: 'categoria',
+                            where: {
+                                nombreCategoria: nombreCategoria // Filtra por nombre de categoría
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+        res.json(recordatorios);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Hubo un error al obtener los recordatorios.' });
+    }
+};
+

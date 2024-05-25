@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const notasControlador = require('../controlador/notasControlador');
+const recordatoriosControlador = require('../controlador/recordatoriosControlador');
 
 router.get('/', notasControlador.getTodosLasNotas);
 router.get('/:id', notasControlador.getNotasPorId);
@@ -10,11 +11,22 @@ router.delete('/:id', notasControlador.eliminarNotas);
 
 
 // CONSULTAS - REPORTES
-// BUSCAR VERSICULOS DE UN LIBRO : NUMEROS
 router.get('/usuarios/:nombreUsuario', notasControlador.getNotaPorUsuario);
-// contar versiculos por cada libro
-router.get('/contar', notasControlador.contarNotasPorAutor);
+
+router.get('/categorias/:nombreCategoria', notasControlador.getNotaPorCategoria);
+
+//router.get('/recordatorios/:nombreUsuario/:nombreCategoria', recordatoriosControlador.getRecordatoriosPorCategoriaYUsuario);
 
 module.exports = router;
 
 
+
+
+
+
+
+
+
+// contar versiculos por cada libro
+//router.get('/contar', notasControlador.contarNotasPorAutor);
+//router.get('/:nombreUsuario/:nombreCategoria', notasControlador.getNotaPorUsuario);
