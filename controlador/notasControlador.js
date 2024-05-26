@@ -5,6 +5,7 @@ const Seq =  require('sequelize');
 const Categoria = require('../modelos/categorias');
 const Recordatorios = require('../modelos/recordatorios');
 const { Op } = require('sequelize');    
+const Nota = require('../modelos/notas');
 
 exports.getTodosLasNotas = async (peticion, respuesta) => {
     try {
@@ -135,64 +136,127 @@ exports.getNotaPorUsuario = async (peticion, respuesta) => {
     }
 };
 
-// NOTAS POR CATEGORIA
-exports.getNotaPorCategoria = async (peticion, respuesta) => {
-    const { nombreCategoria } = peticion.params;
+// // NOTAS POR CATEGORIA
+// exports.getNotaPorCategoria = async (peticion, respuesta) => {
+//     const { nombreCategoria } = peticion.params;
+//     try {
+//         // Encuentra las notas asociadas a la categoría especificada
+//         const notas = await Notas.findAll({
+//             where: {
+//                 idNota: {
+//                     [Op.in]: sequelize.literal(
+//                         `(SELECT idNota FROM Categorias WHERE nombreCategoria = '${nombreCategoria}')`
+//                     )
+//                 }
+//             },
+//             include: [{ model: Usuario, as: 'usuario' }] // Incluir la relación con Usuarios
+//         });
+
+//         respuesta.json(notas);
+//     } catch(error) {
+//         console.log(error);
+//         respuesta.status(500).send(error);
+//     }
+// };
+
+
+
+
+// END POINT MUESTRA TODAS LAS NOTAS QUE SE CREARON EN UNA FECEHA CON CATEGORIA Y PRIORIDAD
+exports.getNotasPorFechaCategoriaYPrioridad = async (req, res) => {
+    const { fecha, categoria, prioridad } = req.params; // Obtén los parámetros de la solicitud
+
     try {
-        // Encuentra las notas asociadas a la categoría especificada
+        // Encuentra las notas que coinciden con la fecha, categoría y prioridad
         const notas = await Notas.findAll({
-            where: {
-                idNota: {
-                    [Op.in]: sequelize.literal(
-                        `(SELECT idNota FROM Categorias WHERE nombreCategoria = '${nombreCategoria}')`
-                    )
-                }
-            },
-            include: [{ model: Usuario, as: 'usuario' }] // Incluir la relación con Usuarios
-        });
-
-        respuesta.json(notas);
-    } catch(error) {
-        console.log(error);
-        respuesta.status(500).send(error);
-    }
-};
-
-
-/********************************* */
-
-exports.getRecordatoriosPorCategoriaYUsuario = async (req, res) => {
-    const { nombreUsuario, nombreCategoria } = req.params;
-    try {
-        const recordatorios = await Recordatorios.findAll({
             include: [
                 {
-                    model: Notas,
-                    where: {
-                        '$categorias.nombreCategoria$': nombreCategoria // Filtra por nombre de categoría
-                    },
-                    include: [
-                        {
-                            model: Usuario,
-                            where: {
-                                nombreUsuario: nombreUsuario // Filtra por nombre de usuario
-                            }
-                        },
-                        {
-                            model: Categoria,
-                            as: 'categoria',
-                            where: {
-                                nombreCategoria: nombreCategoria // Filtra por nombre de categoría
-                            }
-                        }
-                    ]
+                    model: Categoria,
+                    as: 'categorias', // Alias para la asociación
+                    where: { nombreCategoria: categoria }
+                },
+                {
+                    model: Recordatorios,
+                    as: 'recordatorios',
+                    where: { prioridad: prioridad }
                 }
-            ]
+            ],
+            where: sequelize.where(sequelize.fn('DATE', sequelize.col('fechaCreacion')), fecha)
         });
-        res.json(recordatorios);
+
+        res.json(notas); // Envía las notas encontradas como respuesta
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Hubo un error al obtener los recordatorios.' });
+        console.log(error);
+        res.status(500).send(error);
     }
 };
 
+
+
+
+
+
+
+/***************************** */
+// exports.getNotasPorTituloYUsuarioYRecordatorio = async (req, res) => {
+//     const { titulo, nombreUsuario } = req.params;
+
+//     try {
+//         // Consulta a la base de datos
+//         const notas = await Notas.findAll({
+//             include: [
+//                 {
+//                     model: Recordatorios,
+//                     as: 'recordatorios',
+//                     where: { prioridad: 'Alta' }
+//                 },
+//                 {
+//                     model: Usuario,
+//                     as: 'usuarios',
+//                     where: { nombreUsuario: nombreUsuario }
+//                 }
+//             ],
+//             where: { Titulo: titulo }
+//         });
+
+//         // Enviar respuesta con las notas encontradas
+//         res.json(notas);
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send('Hubo un error al buscar las notas.');
+//     }
+// };
+
+
+exports.getNotasPorTituloYUsuarioYRecordatorio = async (req, res) => {
+    const { titulo, nombreUsuario, prioridadRecordatorio } = req.params;
+
+    try {
+        // Realiza la consulta a la base de datos utilizando Sequelize
+        const notas = await Notas.findAll({
+            include: [
+                {
+                    model: Recordatorios,
+                    as: 'recordatorios', // Aquí especificamos el alias
+                    where: { prioridad: prioridadRecordatorio },
+                    required: true
+                },
+                {
+                    model: Usuario,
+                    as: 'usuario', // Aquí especificamos el alias
+                    where: { nombreUsuario: nombreUsuario },
+                    required: true
+                }
+            ],
+            where: {
+                Titulo: titulo
+            }
+        });
+
+        // Enviar respuesta con las notas encontradas
+        res.json(notas);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Hubo un error al buscar las notas.');
+    }
+};

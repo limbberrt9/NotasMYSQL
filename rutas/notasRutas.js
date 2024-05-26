@@ -13,10 +13,12 @@ router.delete('/:id', notasControlador.eliminarNotas);
 // CONSULTAS - REPORTES
 router.get('/usuarios/:nombreUsuario', notasControlador.getNotaPorUsuario);
 
-router.get('/categorias/:nombreCategoria', notasControlador.getNotaPorCategoria);
+//router.get('/categorias/:nombreCategoria', notasControlador.getNotaPorCategoria);
 
-//router.get('/recordatorios/:nombreUsuario/:nombreCategoria', recordatoriosControlador.getRecordatoriosPorCategoriaYUsuario);
+router.get('/notas/:fecha/:categoria/:prioridad', notasControlador.getNotasPorFechaCategoriaYPrioridad);
 
+
+router.get('/:titulo/:nombreUsuario/:prioridadRecordatorio', notasControlador.getNotasPorTituloYUsuarioYRecordatorio);
 module.exports = router;
 
 

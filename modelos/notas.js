@@ -1,3 +1,4 @@
+//MODELOS NOTAS
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Usuario = require('./usuario');
@@ -45,6 +46,7 @@ Usuario.hasMany(Nota, {foreignKey : 'idUsuario', as: 'notas'})
 module.exports = Nota;
 
 /***************************/
+
 
 module.exports = Nota;
 

@@ -1,3 +1,4 @@
+//MODELOS RECORDATORIOS
 const { Sequelize, DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/database'); // Ajusta la ruta según tu configuración de Sequelize
 const Nota = require('./notas');

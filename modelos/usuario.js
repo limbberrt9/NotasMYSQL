@@ -1,3 +1,4 @@
+//MODELOS USUARIO
 //LOGICA DE DATOS, DATOS DE LA BASE DE DATOS PROPIEDADES
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');

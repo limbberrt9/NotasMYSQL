@@ -1,3 +1,5 @@
+
+//MODELOS CATEGORIAS
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Ajusta la ruta según tu configuración de Sequelize
 const Nota = require('./notas');
@@ -17,6 +19,11 @@ const Categorias = sequelize.define('categorias', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    descripcion: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+
     idNota: {
         type: DataTypes.INTEGER,
         allowNull: false,
