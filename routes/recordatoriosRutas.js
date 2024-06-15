@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const recordatoriosControlador = require('../controlador/recordatoriosControlador');
+const recordatoriosControlador = require('../controllers/recordatoriosControlador');
 
 router.get('/', recordatoriosControlador.getTodosLasRecordatorios);
 router.get('/:id', recordatoriosControlador.getRecordatoriosPorId);

@@ -1,5 +1,6 @@
 
-//MODELOS CATEGORIAS
+//modelos
+// categorias.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Ajusta la ruta según tu configuración de Sequelize
 const Nota = require('./notas');

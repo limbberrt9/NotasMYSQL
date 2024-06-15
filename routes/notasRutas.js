@@ -1,7 +1,10 @@
+//routes
+//notasRutas.js
+
 const express = require('express');
 const router = express.Router();
-const notasControlador = require('../controlador/notasControlador');
-const recordatoriosControlador = require('../controlador/recordatoriosControlador');
+const notasControlador = require('../controllers/notasControlador');
+const recordatoriosControlador = require('../controllers/recordatoriosControlador');
 
 router.get('/', notasControlador.getTodosLasNotas);
 router.get('/:id', notasControlador.getNotasPorId);

@@ -1,4 +1,5 @@
-//MODELOS NOTAS
+//MODELOS 
+// notas.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Usuario = require('./usuario');

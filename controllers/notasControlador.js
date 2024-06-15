@@ -1,3 +1,6 @@
+// controllers
+// notasControlador.js
+
 const Notas = require('../modelos/notas');
 const Usuario = require('../modelos/usuario');
 const sequelize = require('../config/database');
@@ -9,8 +12,10 @@ const Nota = require('../modelos/notas');
 
 exports.getTodosLasNotas = async (peticion, respuesta) => {
     try {
-        const notas = await  Notas.findAll();
-        respuesta.json(notas);
+        const notas = await  Notas.findAll();   
+        respuesta.render('notas', { notas });
+        //respuesta.json(notas);
+        
     } 
     catch (error) {
         console.log(error);
@@ -136,29 +141,6 @@ exports.getNotaPorUsuario = async (peticion, respuesta) => {
     }
 };
 
-// // NOTAS POR CATEGORIA
-// exports.getNotaPorCategoria = async (peticion, respuesta) => {
-//     const { nombreCategoria } = peticion.params;
-//     try {
-//         // Encuentra las notas asociadas a la categoría especificada
-//         const notas = await Notas.findAll({
-//             where: {
-//                 idNota: {
-//                     [Op.in]: sequelize.literal(
-//                         `(SELECT idNota FROM Categorias WHERE nombreCategoria = '${nombreCategoria}')`
-//                     )
-//                 }
-//             },
-//             include: [{ model: Usuario, as: 'usuario' }] // Incluir la relación con Usuarios
-//         });
-
-//         respuesta.json(notas);
-//     } catch(error) {
-//         console.log(error);
-//         respuesta.status(500).send(error);
-//     }
-// };
-
 
 
 
@@ -193,40 +175,7 @@ exports.getNotasPorFechaCategoriaYPrioridad = async (req, res) => {
 
 
 
-
-
-
-
-/***************************** */
-// exports.getNotasPorTituloYUsuarioYRecordatorio = async (req, res) => {
-//     const { titulo, nombreUsuario } = req.params;
-
-//     try {
-//         // Consulta a la base de datos
-//         const notas = await Notas.findAll({
-//             include: [
-//                 {
-//                     model: Recordatorios,
-//                     as: 'recordatorios',
-//                     where: { prioridad: 'Alta' }
-//                 },
-//                 {
-//                     model: Usuario,
-//                     as: 'usuarios',
-//                     where: { nombreUsuario: nombreUsuario }
-//                 }
-//             ],
-//             where: { Titulo: titulo }
-//         });
-
-//         // Enviar respuesta con las notas encontradas
-//         res.json(notas);
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).send('Hubo un error al buscar las notas.');
-//     }
-// };
-
+// BUSQUEDA POR TITULO DE NOTA USURIO Y RECORDATORIO
 
 exports.getNotasPorTituloYUsuarioYRecordatorio = async (req, res) => {
     const { titulo, nombreUsuario, prioridadRecordatorio } = req.params;

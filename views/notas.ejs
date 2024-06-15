@@ -1,0 +1,237 @@
+<!-- notas.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todas las Notas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <h1>Todas las Notas</h1>
+        
+        <% if (notas.length > 0) { %> <!-- Verificar si hay notas -->
+            <div class="row">
+                <% notas.forEach(nota => { %> <!-- Iterar sobre cada nota -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= nota.Titulo %></h5> <!-- Título de la nota -->
+                                <p class="card-text"><%= nota.Cuerpo %></p> <!-- Cuerpo de la nota -->
+                                <p class="card-text"><strong>Fecha de Creación:</strong> <%= nota.fechaCreacion %></p> <!-- Fecha de creación -->
+                                
+
+
+
+
+                                
+                                <a href="#" onclick="mostrarFormularioEditar('<%= nota.idNota %>')" class="btn btn-primary btn-sm">Editar</a>
+                                <!-- <a href="/notas/editar/<%= nota.idNota %>" class="btn btn-primary btn-sm">Editar</a> -->
+                                
+                                
+                                <!-- Formulario para editar la nota -->
+                                <form id="formularioEditar<%= nota.idNota %>" style="display: none;">
+                                    <div class="mb-3">
+                                        <label for="titulo">Título</label>
+                                        <input type="text" class="form-control" id="titulo<%= nota.idNota %>" placeholder="Ingrese el título" value="<%= nota.Titulo %>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cuerpo">Cuerpo</label>
+                                        <textarea class="form-control" id="cuerpo<%= nota.idNota %>" rows="3" placeholder="Ingrese el cuerpo de la nota"><%= nota.Cuerpo %></textarea>
+                                    </div>
+                                    <button type="button" onclick="guardarCambios('<%= nota.idNota %>')" class="btn btn-success">Guardar</button>
+                                </form>
+
+
+
+
+
+
+                                
+                                <form action="/notas/<%= nota.idNota %>?_method=DELETE" method="POST" style="display:inline;">
+                                    <button type="button" onclick="eliminarNota('<%= nota.idNota %>')" class="btn btn-danger btn-sm">Eliminar</button>
+                                    <!-- <button type="submit" class="btn btn-danger btn-sm">Eliminar</button> Formulario para eliminar -->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p>No hay notas para mostrar.</p> <!-- Mensaje si no hay notas -->
+        <% } %>
+    </div>
+
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- formularioCrearNota.ejs -->
+<div class="container">
+    <h2>Crear Nueva Nota</h2>
+    <form id="formCrearNota">
+        <div class="mb-3">
+            <label for="idNota">ID Nota</label>
+            <input type="text" class="form-control" id="idNota" name="idNota" placeholder="ID de la nota">
+        </div>
+        <div class="mb-3">
+            <label for="titulo">Título</label>
+            <input type="text" class="form-control" id="titulo" name="Titulo" placeholder="Ingrese el título">
+        </div>
+        <div class="mb-3">
+            <label for="cuerpo">Cuerpo</label>
+            <textarea class="form-control" id="cuerpo" name="Cuerpo" rows="3" placeholder="Ingrese el cuerpo de la nota"></textarea>
+        </div>
+      
+        <div class="mb-3">
+            <label for="idUsuario">ID Usuario</label>
+            <input type="text" class="form-control" id="idUsuario" name="idUsuario" placeholder="ID de usuario">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="guardarNota()">Guardar Nota</button>
+    </form>
+</div>
+
+<script>
+    function guardarNota() {
+        // Obtener los datos del formulario
+        const idNota = document.getElementById('idNota').value;
+        const titulo = document.getElementById('titulo').value;
+        const cuerpo = document.getElementById('cuerpo').value;
+        const fechaCreacion = new Date().toISOString(); // Generar fecha de creación
+        const fechaModificacion = new Date().toISOString(); // Generar fecha de modificación
+        const idUsuario = document.getElementById('idUsuario').value;
+
+        // Enviar la solicitud para crear la nota
+        fetch('/notas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                idNota: idNota,
+                Titulo: titulo, 
+                Cuerpo: cuerpo,
+                fechaCreacion: fechaCreacion,
+                fechaModificacion: fechaModificacion,
+                idUsuario: idUsuario 
+            })
+        })
+        .then(response => response.json())
+        .then(resultado => {
+            // Mostrar mensaje de éxito o error
+            alert(resultado.mensaje);
+            // Recargar la página para mostrar la nueva nota agregada
+            location.reload();
+        })
+        .catch(error => console.error('Error al crear la nota:', error));
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!-- ******** EDICION ****************** -->
+    <script>
+        
+        function mostrarFormularioEditar(idNota) {
+            // Mostrar el formulario de edición correspondiente a la nota seleccionada
+            document.getElementById('formularioEditar' + idNota).style.display = 'block';
+        }
+
+        // Función para guardar los cambios de la nota
+        function guardarCambios(idNota) {
+            // Obtener los datos del formulario
+            var titulo = document.getElementById('titulo' + idNota).value;
+            var cuerpo = document.getElementById('cuerpo' + idNota).value;
+
+            // Aquí puedes realizar una solicitud al servidor para guardar los cambios
+            // En este ejemplo, solo se muestra una alerta con los nuevos datos
+            alert('Cambios guardados:\nTítulo: ' + titulo + '\nCuerpo: ' + cuerpo);
+
+            // Otra opción sería enviar los datos al servidor para guardarlos mediante fetch o AJAX
+        }
+    </script>
+
+   
+    <!-- ************************************* -->
+
+
+
+    
+    
+         <!-- ******** ELIMINAR *************** -->
+      <script>
+        function eliminarNota(idNota) {
+            // Confirmar si el usuario desea eliminar la nota
+            if (confirm('¿Estás seguro de que quieres eliminar esta nota?')) {
+                // Enviar solicitud al servidor para eliminar la nota
+                fetch(`/notas/${idNota}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(resultado => {
+                    // Mostrar mensaje de éxito o error
+                    alert(resultado.mensaje);
+                    // Recargar la página después de eliminar la nota
+                    location.reload();
+                })
+                .catch(error => console.error('Error al eliminar la nota:', error));
+            }
+        }
+        </script>
+      <!-- ************************************* -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

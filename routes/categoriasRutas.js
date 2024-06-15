@@ -1,9 +1,17 @@
+//routes
+//categoriasRutas.js
 
 const express = require ('express');
 const router = express.Router();
-const categoriasControlador = require('../controlador/categoriasControlador');
-const notasControlador = require('../controlador/notasControlador');
-const recordatoriosControlador = require('../controlador/recordatoriosControlador');
+const categoriasControlador = require('../controllers/categoriasControlador');
+const notasControlador = require('../controllers/notasControlador');
+const recordatoriosControlador = require('../controllers/recordatoriosControlador');
+
+
+
+
+router.get('/', categoriasControlador.renderizarCategorias);
+
 
 
 
